@@ -5,16 +5,18 @@
 lvim.builtin.treesitter.ensure_installed = {
   "go",
   "gomod",
-  "php"
 }
 
-------------------------
+-----------------------
 -- Plugins
 ------------------------
 lvim.plugins = {
   "olexsmir/gopher.nvim",
   "leoluz/nvim-dap-go",
+  {'akinsho/toggleterm.nvim', version = "*", config = true},
 }
+
+
 
 ------------------------
 -- Formatting
@@ -23,12 +25,11 @@ local formatters = require "lvim.lsp.null-ls.formatters"
 formatters.setup {
   { command = "goimports", filetypes = { "go" } },
   { command = "gofumpt", filetypes = { "go" } },
-  { command = "phpcsfixer", filetypes = { "php" } },
 }
 
 lvim.format_on_save = {
   enabled = true,
-  pattern = {"*.html", "*.js", "*.go", "*.php" },
+  pattern = {"*.html", "*.js", "*.css", "*.go" },
 }
 
 ------------------------
@@ -36,7 +37,6 @@ lvim.format_on_save = {
 ------------------------
 local linters = require "lvim.lsp.null-ls.linters"
 linters.setup {
-  { command = "phpcs", filetypes = { "php" } },
 }
 
 ------------------------
@@ -53,36 +53,6 @@ dapgo.setup()
 -- LSP
 ------------------------
 local lsp_manager = require "lvim.lsp.manager"
-
-------------------------
--- LSP PHP
-------------------------
--- https://github.com/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation#PHP
-lsp_manager.setup("intelephense")
-local dap = require("dap")
-local mason_path = vim.fn.glob(vim.fn.stdpath("data") .. "/mason/")
-dap.adapters.php = {
-	type = "executable",
-	command = "node",
-	args = { mason_path .. "packages/php-debug-adapter/extension/out/phpDebug.js" },
-}
-dap.configurations.php = {
-  {
-    name = "Listen for Xdebug",
-		type = "php",
-		request = "launch",
-		port = 9003,
-  },
-  {
-    name = "Debug currently open script",
-		type = "php",
-		request = "launch",
-		port = 9003,
-    cwd = "${fileDirname}",
-    program = "${file}",
-    runtimeExecutable = "php",
-  },
-}
 
 ------------------------
 -- LSP
@@ -147,6 +117,16 @@ gopher.setup {
 }
 
 lvim.transparent_window = true
+
+------------------------
+-- ToggleTerm
+------------------------
+lvim.builtin.which_key.mappings["t"] = {
+  name = "Terminal",
+  t = { "<cmd>ToggleTerm direction=float<cr>", "Float" },
+  v = { "<cmd>ToggleTerm size=40 direction=vertical<cr>", "Vertical" },
+  h = { "<cmd>ToggleTerm direction=horizontal<cr>", "Horizontal" },
+}
 
 ------------------------
 -- 
