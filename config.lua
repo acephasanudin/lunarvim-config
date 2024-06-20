@@ -164,14 +164,26 @@ end
 -- LSP
 ------------------------
 local lsp_manager = require "lvim.lsp.manager"
+local lspconfig = require 'lspconfig'
+local configs = require 'lspconfig/configs'
+
+if not configs.golangcilsp then
+ 	configs.golangcilsp = {
+		default_config = {
+			cmd = {'golangci-lint-langserver'},
+			root_dir = lspconfig.util.root_pattern('.git', 'go.mod'),
+			init_options = {
+					command = { "golangci-lint", "run", "--enable-all", "--disable", "lll", "--out-format", "json", "--issues-exit-code=1" };
+			}
+		};
+	}
+end
+lspconfig.golangci_lint_ls.setup {
+	filetypes = {'go','gomod'}
+}
+
 
 vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "gopls" })
-
-lsp_manager.setup("golangci_lint_ls", {
-  on_init = require("lvim.lsp").common_on_init,
-  capabilities = require("lvim.lsp").common_capabilities(),
-})
-
 lsp_manager.setup("gopls", {
   on_attach = function(client, bufnr)
     require("lvim.lsp").common_on_attach(client, bufnr)
